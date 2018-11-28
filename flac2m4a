@@ -1,0 +1,24 @@
+#!/bin/bash
+
+DIR=$1
+BITRATE=$2
+
+count=$(ls -1 ${DIR}*.flac 2> /dev/null | wc -l)
+
+echo -e "I'll convert all FLAC files inside $1\n"
+echo $count
+if [ $count -gt 0 ]; then
+	
+	if ! [ -d output ]; then mkdir output; fi
+	if ! [ -w output ]; then chmod u+x output; fi
+
+	for name in ${DIR}*.flac ; do
+    	avconv -threads auto -i "$name" -vn -b ${BITRATE}k output/"$(basename "${name/.flac}").m4a"
+	done
+
+else
+	echo -e "Sorry, FLAC files not found in this directory\n"
+fi
+
+echo "Done!"
+exit 0
