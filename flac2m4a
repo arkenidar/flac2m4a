@@ -1,19 +1,46 @@
 #!/bin/bash
 
-DIR=$1
-BITRATE=$2
+DIR="./"
+BITRATE=320
+OUTPUT="./output"
 
-count=$(ls -1 ${DIR}*.flac 2> /dev/null | wc -l)
+while [ $# -gt 0 ]; do
+	case $1 in
+		-p | --path)
+			shift
+			DIR=$1
+			;;
+		-b | --bitrate)
+			shift
+			BITRATE=$1
+			;;
+		-o | --output-directory)
+			shift
+			OUTPUT=$1
+			;;
+		-h | --help)
+			cat doc/help
+			exit 0
+			;;
+	esac
+	shift
+done
 
-echo -e "I'll convert all FLAC files inside $1\n"
-echo $count
-if [ $count -gt 0 ]; then
+# return the number of FLAC files founded in path
+COUNT=$(ls -1 ${DIR}/*.flac 2> /dev/null | wc -l)
+
+echo "I'll convert all FLAC files inside $DIR"
+echo -e "I've found $COUNT FLAC files to convert\n" 
+if [ $COUNT -gt 0 ]; then
 	
-	if ! [ -d output ]; then mkdir output; fi
-	if ! [ -w output ]; then chmod u+x output; fi
+	# create directory output or nested directory output and set permissions
+	if ! [ -d $OUTPUT ]; then mkdir -p $OUTPUT; fi
+	if ! [ -w $OUTPUT ]; then chmod u+x $OUTPUT; fi
 
-	for name in ${DIR}*.flac ; do
-    	avconv -threads auto -i "$name" -vn -b ${BITRATE}k output/"$(basename "${name/.flac}").m4a"
+	# use avconv (ffmpeg) to convert each file
+	# OPTION -threads auto (use multithreading if it is possible)
+	for name in ${DIR}/*.flac ; do
+    	avconv -threads auto -i "$name" -vn -b:a ${BITRATE}k -strict -2 $OUTPUT/"$(basename "${name/.flac}").m4a"
 	done
 
 else
