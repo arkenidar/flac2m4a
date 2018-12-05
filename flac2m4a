@@ -6,42 +6,56 @@ OUTPUT="./output"
 
 while [ $# -gt 0 ]; do
 	case $1 in
-		-p | --path)
+        -b | --bitrate)
+            shift
+            BITRATE=$1
+            ;;
+		-f | --file)
 			shift
-			DIR=$1
+			FILE=$1
 			;;
-		-b | --bitrate)
-			shift
-			BITRATE=$1
-			;;
+		-h | --help)
+            # It gets right path of script; then print help file
+            cat $(dirname $(readlink -f $0))/doc/help
+            exit 0
+            ;;
 		-o | --output-directory)
 			shift
 			OUTPUT=$1
 			;;
-		-h | --help)
-			# It gets right path of script, then print help file
-			cat $(dirname $(readlink -f $0))/doc/help
-			exit 0
-			;;
+        -p | --path)
+            shift
+            DIR=$1
+            ;;
 	esac
 	shift
 done
 
-# return the number of FLAC files founded in path
-COUNT=$(ls -1 "${DIR}"/*.flac 2> /dev/null | wc -l)
+if ! [ -z "$FILE" ]; then
+	echo "I'll convert this file ($FILE) inside $DIR"
 
-echo "I'll convert all FLAC files inside $DIR"
-echo -e "I've found $COUNT FLAC files to convert\n" 
-if [ $COUNT -gt 0 ]; then
+	# add <filename> into array ELEMENTS
+	readarray ELEMENTS < <(ls -1 "${DIR}"/"$FILE" 2> /dev/null)
+else
+	echo "I'll convert all FLAC files inside $DIR"
 	
+	# add FLAC <filenames> founded in path into array ELEMENTS
+	readarray ELEMENTS < <(ls -1 "${DIR}"/*.flac 2> /dev/null)
+fi
+
+echo -e "I've found ${#ELEMENTS[*]} FLAC files to convert\n"
+if [ ${#ELEMENTS[*]} -gt 0 ]; then
+
 	# create directory output or nested directory output and set permissions
 	if ! [ -d "$OUTPUT" ]; then mkdir -p "$OUTPUT"; fi
 	if ! [ -w "$OUTPUT" ]; then chmod u+x "$OUTPUT"; fi
 
 	# use avconv (ffmpeg) to convert each file
 	# OPTION -threads auto (use multithreading if it is possible)
-	for name in "${DIR}"/*.flac ; do
-    	avconv -threads auto -i "$name" -vn -b:a ${BITRATE}k -strict -2 "$OUTPUT"/"$(basename "${name/.flac}").m4a"
+
+	# for each <filename> that I'm parsing, I delete final \n before processes it
+	for index in ${!ELEMENTS[@]} ; do
+    	avconv -threads auto -i "$(echo ${ELEMENTS[$index]} | tr -d '\n')" -vn -b:a ${BITRATE}k -strict -2 "$OUTPUT"/"$(basename "${ELEMENTS[$index]/.flac}").m4a"
 	done
 
 else
