@@ -28,6 +28,8 @@ Now run **flac2m4a** everywhere!
 
 ## How it work
 
+[![Preview video](http://img.youtube.com/vi/Pz7HKKJeIIM/maxresdefault.jpg)](http://www.youtube.com/watch?v=Pz7HKKJeIIM)
+
 _Default settings_:
 * `pathname` : is the work directory from you launch this program (`$PWD`)
 * `output`: script creates a new directory called _output_ if it doesn't exists
@@ -138,6 +140,11 @@ user@linuxmachine ~/Music $ tree
 ```
 user@linuxmachine ~/Music $ flac2m4a --bitrates 192
 ```
+**Use `-f` or `--file` <file_name> to convert just <file_name>**
+```
+user@linuxmachine ~/Music $ flac2m4a -f Ray\ Barretto\ -\ Amor\ artificial.flac
+```
+
 **NB**: Obviously, all options can be used together.
 
 

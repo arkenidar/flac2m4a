@@ -1,7 +1,8 @@
 Usage: ./flac2m4a [OPTION]...
 Convert all FLAC files found from current directory (default) or in a specific path passed as argument
 
-  -p, --path			Set the directory to search FLAC files
   -b , --bitrate		Set bitrates for output files
+  -f , --file			Set file to convert
   -o, --output-directory	Use the directory as output folder
+  -p, --path			Set the directory to search FLAC files
   -h, --help			Show this help and exit
