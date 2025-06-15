@@ -55,7 +55,7 @@ if [ ${#ELEMENTS[*]} -gt 0 ]; then
 
 	# for each <filename> that I'm parsing, I delete final \n before processes it
 	for index in ${!ELEMENTS[@]} ; do
-    	avconv -threads auto -i "$(echo ${ELEMENTS[$index]} | tr -d '\n')" -vn -b:a ${BITRATE}k -strict -2 "$OUTPUT"/"$(basename "${ELEMENTS[$index]/.flac}").m4a"
+    	ffmpeg -threads auto -i "$(echo ${ELEMENTS[$index]} | tr -d '\n')" -vn -b:a ${BITRATE}k -strict -2 "$OUTPUT"/"$(basename "${ELEMENTS[$index]/.flac}").m4a"
 	done
 
 else
